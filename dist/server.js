@@ -8,7 +8,7 @@ const path_1 = __importDefault(require("path"));
 const app = express_1.default();
 app.get("/test", (req, res) => {
     console.log("/test");
-    res.json({ message: "Hello World" });
+    res.json({ message: "Journal Word Frequencies" });
 });
 // // The "catchall" handler: for any request that doesn't
 // // match one above, send back React's index.html file.
