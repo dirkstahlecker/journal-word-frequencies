@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import {observer} from "mobx-react";
-import {makeObservable, observable, runInAction} from "mobx";
+import {makeObservable, observable, runInAction, action} from "mobx";
 import { JournalReader, JournalReaderMachine } from './JournalReader';
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import 'react-tabs/style/react-tabs.css';
@@ -14,6 +14,8 @@ export class AppMachine
 
   public journalReaderMachine: JournalReaderMachine = new JournalReaderMachine();
   public journalWriterMachine: JournalWriterMachine = new JournalWriterMachine();
+
+  @observable public selectedFile: any | null = null;
 
   constructor()
   {
@@ -50,18 +52,58 @@ class App extends React.Component<AppProps>
 {
   private machine: AppMachine = new AppMachine();
 
-  // private async fetchData(): Promise<void>
-  // {
-  //   const testDataRaw = await fetch('/test');
-  //   const td = await testDataRaw.json();
+  private async fetchData(): Promise<void>
+  {
+    const testDataRaw = await fetch('/test');
+    const td = await testDataRaw.json();
 
-  //   runInAction(() => this.machine.testData = td.message);
-  // }
+    runInAction(() => this.machine.testData = td.message);
+  }
 
   componentDidMount()
   {
-    // this.fetchData();
+    this.fetchData();
   }
+
+  onFileChange = (e: any) => { //TODO
+    // this.setState({ selectedFile: event.target.files[0] });
+    this.machine.selectedFile = e.target.files[0];
+  }; 
+
+  onFileUpload = async(): Promise<void> => { 
+    // const formData = new FormData(); 
+    // formData.append( 
+    //   "myFile", 
+    //   this.state.selectedFile, 
+    //   this.state.selectedFile.name 
+    // ); 
+    // axios.post("api/uploadfile", formData); 
+
+    // const requestOptions = {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({name: this.machine.selectedFile.name, file: this.machine.selectedFile})
+    // }
+
+    // await fetch('/journal/upload', requestOptions);
+    // console.log("")
+
+
+    const formData = new FormData()
+    formData.append('file', this.machine.selectedFile)
+    console.log(this.machine.selectedFile)
+  
+    fetch('/journal/upload', {
+      method: 'POST',
+      body: formData,
+      // headers: {'content-type': 'application/json'},
+      // headers: {'Content-Type': 'multipart/form-data'}
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data)
+    })
+  }; 
 
   render()
   {
@@ -72,6 +114,9 @@ class App extends React.Component<AppProps>
       >
         <Tabs>
           <TabList>
+            <Tab>
+              Upload
+            </Tab>
             <Tab>
               Write
             </Tab>
@@ -89,6 +134,10 @@ class App extends React.Component<AppProps>
             </Tab>
           </TabList>
 
+          <TabPanel>
+            <input type="file" onChange={this.onFileChange}/>
+            <button onClick={this.onFileUpload}> Upload! </button>
+          </TabPanel>
           <TabPanel>
             <JournalWriter machine={this.machine.journalWriterMachine}/>
           </TabPanel>
@@ -109,7 +158,7 @@ class App extends React.Component<AppProps>
               <br />
               Display Name: <input type="text" id="displayName" />
               <br />
-              {/* <button onClick={this.machine.handleEasyMarkupGeneratorSubmit}>Submit</button> */}
+              <button onClick={this.machine.handleEasyMarkupGeneratorSubmit}>Submit</button>
               <br />
               <br />
               <div id="displayCopyArea">
