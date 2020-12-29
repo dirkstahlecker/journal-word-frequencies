@@ -6,6 +6,7 @@ import { JournalReader, JournalReaderMachine } from './JournalReader';
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import 'react-tabs/style/react-tabs.css';
 import { JournalWriter, JournalWriterMachine } from './JournalWriter';
+import { MarkupUtils } from './MarkupUtils';
 
 export class AppMachine
 {
@@ -18,6 +19,25 @@ export class AppMachine
   {
     makeObservable(this);
   }
+
+  public handleEasyMarkupGeneratorSubmit = (): void => {
+    document.getElementById("firstName");
+    const firstName: string | null = (document.getElementById("firstName") as HTMLInputElement).value;
+    const lastName: string = (document.getElementById("lastName") as HTMLInputElement).value;
+    const displayName: string = (document.getElementById("displayName") as HTMLInputElement).value;
+
+    const currentMarkupHack = MarkupUtils.makeMarkup(firstName, lastName, displayName);
+    (document.getElementById("placeToSelectText") as HTMLInputElement).value = currentMarkupHack;
+
+    var copyText = document.getElementById("displayCopyArea") as HTMLElement;
+    // this.selectElementContents(copyText);
+    document.execCommand("copy");
+
+    (document.getElementById("firstName") as HTMLInputElement).value = "";
+    (document.getElementById("firstName") as HTMLInputElement).focus();
+    (document.getElementById("lastName") as HTMLInputElement).value = "";
+    (document.getElementById("displayName") as HTMLInputElement).value = "";
+  };
 }
 
 export interface AppProps
@@ -80,7 +100,7 @@ class App extends React.Component<AppProps>
               if (e.key === "Enter")
               {
                 e.preventDefault();
-                // this.machine.handleEasyMarkupGeneratorSubmit();
+                this.machine.handleEasyMarkupGeneratorSubmit();
               }
             }}>
               First Name: <input type="text" id="firstName" autoFocus={true}/>
