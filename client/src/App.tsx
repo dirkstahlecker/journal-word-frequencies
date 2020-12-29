@@ -5,12 +5,14 @@ import {makeObservable, observable, runInAction} from "mobx";
 import { JournalReader, JournalReaderMachine } from './JournalReader';
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import 'react-tabs/style/react-tabs.css';
+import { JournalWriter, JournalWriterMachine } from './JournalWriter';
 
 export class AppMachine
 {
   @observable testData: any = null;
 
   public journalReaderMachine: JournalReaderMachine = new JournalReaderMachine();
+  public journalWriterMachine: JournalWriterMachine = new JournalWriterMachine();
 
   constructor()
   {
@@ -68,7 +70,7 @@ class App extends React.Component<AppProps>
           </TabList>
 
           <TabPanel>
-            {/* <JournalWriter machine={this.props.machine.journalWriterMachine}/> */}
+            <JournalWriter machine={this.machine.journalWriterMachine}/>
           </TabPanel>
           <TabPanel>
             <JournalReader machine={this.machine.journalReaderMachine}/>

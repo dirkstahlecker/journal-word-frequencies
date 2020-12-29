@@ -1,1 +1,4 @@
+12/2020: This is the going to be the master version. It has a typescript client and server.
+Currently in the process of transfering everything over to here.
+
 server setup: https://developer.okta.com/blog/2018/11/15/node-express-typescript
