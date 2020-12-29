@@ -36,7 +36,9 @@ app.post('/journal/upload', (req, res) => {
     return res.status(400).send('No files were uploaded.');
   }
 
-  console.log(req.files.file);
+  //need to convert the data to text
+  const fileText: string = (req.files.file as any).data.toString('utf8');
+  
 });
 
 // // The "catchall" handler: for any request that doesn't

@@ -32,6 +32,8 @@ app.post('/journal/upload', (req, res) => {
         return res.status(400).send('No files were uploaded.');
     }
     console.log(req.files.file);
+    console.log(req.files.file.data.toString('utf8'));
+    // console.log((req.files.file as any).journal_path);
 });
 // // The "catchall" handler: for any request that doesn't
 // // match one above, send back React's index.html file.

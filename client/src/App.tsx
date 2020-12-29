@@ -135,7 +135,7 @@ class App extends React.Component<AppProps>
           </TabList>
 
           <TabPanel>
-            <input type="file" onChange={this.onFileChange}/>
+            <input type="file" name="journal_path" onChange={this.onFileChange}/>
             <button onClick={this.onFileUpload}> Upload! </button>
           </TabPanel>
           <TabPanel>
