@@ -4,7 +4,7 @@ import fileUpload from 'express-fileupload';
 import { Client } from 'pg';
 import { Parser } from './parser';
 import { AnyOperator } from 'sequelize/types';
-import bodyParser from 'body-parser';
+// import bodyParser from 'body-parser';
 //tslint:disable
 const Sequelize = require('sequelize');
 // tslint:enable
@@ -22,12 +22,12 @@ app.use(express.json());       // to support JSON-encoded bodies
 app.use(express.urlencoded()); // to support URL-encoded bodies
 app.use(fileUpload());
 
-app.use(bodyParser.json())
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-)
+// app.use(bodyParser.json())
+// app.use(
+//   bodyParser.urlencoded({
+//     extended: true,
+//   })
+// )
 
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
@@ -41,8 +41,6 @@ app.use(
 
 app.get('/getNames', getNames);
 
-console.log("Database URL: ");
-console.log(process.env.DATABASE_URL);
 
 
 // const sequelize = new Sequelize('postgres://localhost:5432/dbname')

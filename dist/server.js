@@ -7,7 +7,7 @@ const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const express_fileupload_1 = __importDefault(require("express-fileupload"));
 const parser_1 = require("./parser");
-const body_parser_1 = __importDefault(require("body-parser"));
+// import bodyParser from 'body-parser';
 //tslint:disable
 const Sequelize = require('sequelize');
 // tslint:enable
@@ -21,17 +21,17 @@ app.use(express_1.default.static(path_1.default.join(__dirname, 'client/build'))
 app.use(express_1.default.json()); // to support JSON-encoded bodies
 app.use(express_1.default.urlencoded()); // to support URL-encoded bodies
 app.use(express_fileupload_1.default());
-app.use(body_parser_1.default.json());
-app.use(body_parser_1.default.urlencoded({
-    extended: true,
-}));
+// app.use(bodyParser.json())
+// app.use(
+//   bodyParser.urlencoded({
+//     extended: true,
+//   })
+// )
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 ///////////////////
 // Database
 app.get('/getNames', queries_1.getNames);
-console.log("Database URL: ");
-console.log(process.env.DATABASE_URL);
 // const sequelize = new Sequelize('postgres://localhost:5432/dbname')
 // sequelize.authenticate()
 // .then(() => {

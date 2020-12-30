@@ -15,10 +15,21 @@ const connString = process.env.DATABASE_URL
   || 'postgresql://dirkstahlecker@localhost:5432/wordfreq';
 console.log("connString: " + connString);
 
-const pool = new Pool({
-  connectionString : connString,
-  ssl: { rejectUnauthorized: false }
-});
+let pool: Pool;
+if (process.env.DATABASE_URL)
+{
+  pool = new Pool({
+    connectionString : connString,
+    ssl: { rejectUnauthorized: false }
+  });
+}
+else
+{
+  pool = new Pool({
+    connectionString: connString
+  });
+}
+
 
 // const pool = new Pool({
 //   user: 'tsbqunitsyqmur', //'dirkstahlecker',
