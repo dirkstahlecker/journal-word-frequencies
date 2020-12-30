@@ -13,10 +13,6 @@ const app = express_1.default();
 // Don't touch the following - Heroku gets very finnicky about it
 // Serve static files from the React app
 app.use(express_1.default.static(path_1.default.join(__dirname, 'client/build')));
-// app.use( bodyParser.json() );       // to support JSON-encoded bodies
-// app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-//   extended: true
-// }));
 app.use(express_1.default.json()); // to support JSON-encoded bodies
 app.use(express_1.default.urlencoded()); // to support URL-encoded bodies
 app.use(express_fileupload_1.default());
@@ -36,11 +32,6 @@ app.post('/journal/upload', (req, res) => {
     console.log(fileText);
     parser_1.Parser.parse(fileText);
 });
-// // The "catchall" handler: for any request that doesn't
-// // match one above, send back React's index.html file.
-// app.get('*', (req, res) => {
-//     res.sendFile(path.join(__dirname+'/client/build/index.html'));
-//   });
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 // Don't touch the following - Heroku gets very finnicky about it
