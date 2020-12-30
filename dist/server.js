@@ -31,7 +31,8 @@ app.use(express_fileupload_1.default());
 /////////////////////////////////////////////////////////////////////
 ///////////////////
 // Database
-app.get('/getNames', queries_1.getNames);
+app.get('/api/getNames', queries_1.getNames);
+app.post('/api/newDisplayName', queries_1.newDisplayName);
 // const sequelize = new Sequelize('postgres://localhost:5432/dbname')
 // sequelize.authenticate()
 // .then(() => {

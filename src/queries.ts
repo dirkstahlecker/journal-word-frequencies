@@ -3,14 +3,11 @@ import { Pool } from 'pg'
 const pg = require('pg');
 // tslint:enable
 
+// https://blog.logrocket.com/nodejs-expressjs-postgresql-crud-rest-api-example/
 
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 // Don't touch the following - Heroku gets very finnicky about it
-
-// if (process.env.DATABASE_URL) {
-//   pg.defaults.ssl = true;
-// }
 
 const connString = process.env.DATABASE_URL
   || 'postgresql://dirkstahlecker@localhost:5432/wordfreq';
@@ -46,7 +43,7 @@ else
 
 
 export const getNames = (req: any, res: any): any => {
-  console.log("/getNames")
+  console.log("/api/getNames")
   pool.query('SELECT * FROM names', (error, results) => {
     if (error)
     {
@@ -56,4 +53,21 @@ export const getNames = (req: any, res: any): any => {
   })
 }
 
-// https://blog.logrocket.com/nodejs-expressjs-postgresql-crud-rest-api-example/
+export const newDisplayName = (req: any, res: any) => {
+  console.log('/api/newDisplayName');
+  const { displayname, firstname, lastname } = req.body;
+
+  const query: string = `INSERT INTO names (displayname, firstname, lastname) VALUES ` +
+    `('${displayname}', '{${firstname}}', '{${lastname}}')`;
+
+  console.log(query)
+
+  pool.query(query, (error, results) => {
+    if (error)
+    {
+      throw error
+    }
+    res.status(201).send(`User added with ID: ${res.insertId}`)
+  })
+}
+

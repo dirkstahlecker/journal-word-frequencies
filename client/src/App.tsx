@@ -54,7 +54,39 @@ class App extends React.Component<AppProps>
 
   private async fetchTestData(): Promise<void>
   {
-    const testDataRaw = await fetch('/getNames');
+    const data = {
+      displayname: "kip",
+      firstname: "kip",
+      lastname: "stahlecker"
+    };
+
+    const testDataRaw = await fetch('/api/newDisplayName', {
+      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      // mode: 'cors', // no-cors, *cors, same-origin
+      // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+      // credentials: 'same-origin', // include, *same-origin, omit
+      headers: {
+        'Content-Type': 'application/json'
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      // redirect: 'follow', // manual, *follow, error
+      // referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+      body: JSON.stringify(data) // body data type must match "Content-Type" header
+    });
+    const td = await testDataRaw.json();
+
+    // runInAction(() => this.machine.testData = JSON.stringify(td));
+  }
+
+  private async fetchAllDbData(): Promise<void>
+  {
+    const data = {
+      displayname: "kip",
+      firstname: "kip",
+      lastname: "stahlecker"
+    };
+
+    const testDataRaw = await fetch('/api/getNames',);
     const td = await testDataRaw.json();
 
     runInAction(() => this.machine.testData = JSON.stringify(td));
@@ -138,7 +170,8 @@ class App extends React.Component<AppProps>
           </TabList>
 
           <TabPanel>
-            <button onClick={() => this.fetchTestData()}>Test</button>
+            <button onClick={() => this.fetchTestData()}>Test</button>&nbsp;
+            <button onClick={() => this.fetchAllDbData()}>Get DB Data</button>
             <br/>
             {
               this.machine.testData != null &&
