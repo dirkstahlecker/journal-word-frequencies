@@ -30,6 +30,8 @@ app.use(body_parser_1.default.urlencoded({
 ///////////////////
 // Database
 app.get('/getNames', queries_1.getNames);
+console.log("Database URL: ");
+console.log(process.env.DATABASE_URL);
 // const sequelize = new Sequelize('postgres://localhost:5432/dbname')
 // sequelize.authenticate()
 // .then(() => {
