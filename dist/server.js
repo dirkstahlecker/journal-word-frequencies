@@ -5,18 +5,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
-const body_parser_1 = __importDefault(require("body-parser"));
 const express_fileupload_1 = __importDefault(require("express-fileupload"));
+const parser_1 = require("./parser");
 const app = express_1.default();
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 // Don't touch the following - Heroku gets very finnicky about it
 // Serve static files from the React app
 app.use(express_1.default.static(path_1.default.join(__dirname, 'client/build')));
-app.use(body_parser_1.default.json()); // to support JSON-encoded bodies
-app.use(body_parser_1.default.urlencoded({
-    extended: true
-}));
+// app.use( bodyParser.json() );       // to support JSON-encoded bodies
+// app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+//   extended: true
+// }));
 app.use(express_1.default.json()); // to support JSON-encoded bodies
 app.use(express_1.default.urlencoded()); // to support URL-encoded bodies
 app.use(express_fileupload_1.default());
@@ -31,9 +31,10 @@ app.post('/journal/upload', (req, res) => {
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).send('No files were uploaded.');
     }
-    console.log(req.files.file);
-    console.log(req.files.file.data.toString('utf8'));
-    // console.log((req.files.file as any).journal_path);
+    // need to convert the data to text
+    const fileText = req.files.file.data.toString('utf8');
+    console.log(fileText);
+    parser_1.Parser.parse(fileText);
 });
 // // The "catchall" handler: for any request that doesn't
 // // match one above, send back React's index.html file.
