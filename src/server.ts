@@ -41,6 +41,9 @@ app.use(
 
 app.get('/getNames', getNames);
 
+console.log("Database URL: ");
+console.log(process.env.DATABASE_URL);
+
 
 // const sequelize = new Sequelize('postgres://localhost:5432/dbname')
 
