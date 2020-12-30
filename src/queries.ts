@@ -4,12 +4,13 @@ const pg = require('pg');
 // tslint:enable
 
 
-if (process.env.DATABASE_URL) {
-  pg.defaults.ssl = true;
-}
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+// Don't touch the following - Heroku gets very finnicky about it
 
-// include an OR statement if you switch between a local dev db and
-// a remote heroku environment
+// if (process.env.DATABASE_URL) {
+//   pg.defaults.ssl = true;
+// }
 
 const connString = process.env.DATABASE_URL
   || 'postgresql://dirkstahlecker@localhost:5432/wordfreq';
@@ -30,7 +31,6 @@ else
   });
 }
 
-
 // const pool = new Pool({
 //   user: 'tsbqunitsyqmur', //'dirkstahlecker',
 //   host: process.env.DATABASE_URL || 'localhost',
@@ -39,6 +39,11 @@ else
 //   password: '5fdc0e7b6c8978b6dbf9291025a3e510f49ca1fef9436e8917cffdd167b800ac',
 //   port: 5432,
 // })
+
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+
+
 
 export const getNames = (req: any, res: any): any => {
   console.log("/getNames")
