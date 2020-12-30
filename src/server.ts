@@ -1,7 +1,14 @@
 import express from 'express';
 import path from 'path';
 import fileUpload from 'express-fileupload';
+import { Client } from 'pg';
 import { Parser } from './parser';
+import { AnyOperator } from 'sequelize/types';
+import bodyParser from 'body-parser';
+//tslint:disable
+const Sequelize = require('sequelize');
+// tslint:enable
+import {getNames} from "./queries";
 
 const app = express();
 
@@ -15,8 +22,60 @@ app.use(express.json());       // to support JSON-encoded bodies
 app.use(express.urlencoded()); // to support URL-encoded bodies
 app.use(fileUpload());
 
+app.use(bodyParser.json())
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+)
+
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
+
+
+
+
+///////////////////
+// Database
+
+
+app.get('/getNames', getNames);
+
+
+// const sequelize = new Sequelize('postgres://localhost:5432/dbname')
+
+// sequelize.authenticate()
+// .then(() => {
+//   console.log('Connection has been established successfully.');
+// })
+// .catch((err: any) => {
+//   console.error('Unable to connect to the database:', err);
+// });
+
+
+// const client = new Client({
+//   connectionString: process.env.DATABASE_URL || 'postgres://localhost:5000/journal-word-frequencies',
+//   ssl: true
+// });
+
+// client.connect();
+
+// client.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, res) => {
+//   if (err)
+//   {
+//     throw err;
+//   }
+
+//   console.log("DATABASE STUFF:");
+//   for (const row of res.rows)
+//   {
+//     console.log(JSON.stringify(row));
+//   }
+//   client.end();
+// });
+///////////////////
+
+
 
 
 app.get("/test", (req, res) => {

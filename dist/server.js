@@ -7,6 +7,11 @@ const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const express_fileupload_1 = __importDefault(require("express-fileupload"));
 const parser_1 = require("./parser");
+const body_parser_1 = __importDefault(require("body-parser"));
+//tslint:disable
+const Sequelize = require('sequelize');
+// tslint:enable
+const queries_1 = require("./queries");
 const app = express_1.default();
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
@@ -16,8 +21,41 @@ app.use(express_1.default.static(path_1.default.join(__dirname, 'client/build'))
 app.use(express_1.default.json()); // to support JSON-encoded bodies
 app.use(express_1.default.urlencoded()); // to support URL-encoded bodies
 app.use(express_fileupload_1.default());
+app.use(body_parser_1.default.json());
+app.use(body_parser_1.default.urlencoded({
+    extended: true,
+}));
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
+///////////////////
+// Database
+app.get('/getNames', queries_1.getNames);
+// const sequelize = new Sequelize('postgres://localhost:5432/dbname')
+// sequelize.authenticate()
+// .then(() => {
+//   console.log('Connection has been established successfully.');
+// })
+// .catch((err: any) => {
+//   console.error('Unable to connect to the database:', err);
+// });
+// const client = new Client({
+//   connectionString: process.env.DATABASE_URL || 'postgres://localhost:5000/journal-word-frequencies',
+//   ssl: true
+// });
+// client.connect();
+// client.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, res) => {
+//   if (err)
+//   {
+//     throw err;
+//   }
+//   console.log("DATABASE STUFF:");
+//   for (const row of res.rows)
+//   {
+//     console.log(JSON.stringify(row));
+//   }
+//   client.end();
+// });
+///////////////////
 app.get("/test", (req, res) => {
     console.log("/test");
     res.json({ message: "Journal Word Frequencies" });
