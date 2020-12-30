@@ -52,17 +52,17 @@ class App extends React.Component<AppProps>
 {
   private machine: AppMachine = new AppMachine();
 
-  private async fetchData(): Promise<void>
+  private async fetchTestData(): Promise<void>
   {
-    const testDataRaw = await fetch('/test');
+    const testDataRaw = await fetch('/getNames');
     const td = await testDataRaw.json();
 
-    runInAction(() => this.machine.testData = td.message);
+    runInAction(() => this.machine.testData = JSON.stringify(td));
   }
 
   componentDidMount()
   {
-    this.fetchData();
+    // this.fetchData();
   }
 
   onFileChange = (e: any) => { //TODO
@@ -115,6 +115,9 @@ class App extends React.Component<AppProps>
         <Tabs>
           <TabList>
             <Tab>
+              Test
+            </Tab>
+            <Tab>
               Upload
             </Tab>
             <Tab>
@@ -134,6 +137,14 @@ class App extends React.Component<AppProps>
             </Tab>
           </TabList>
 
+          <TabPanel>
+            <button onClick={() => this.fetchTestData()}>Test</button>
+            <br/>
+            {
+              this.machine.testData != null &&
+              this.machine.testData
+            }
+          </TabPanel>
           <TabPanel>
             <input type="file" name="journal_path" onChange={this.onFileChange}/>
             <button onClick={this.onFileUpload}> Upload! </button>

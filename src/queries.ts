@@ -11,7 +11,8 @@ const pool = new Pool({
 export const getNames = (req: any, res: any): any => {
   console.log("/getNames")
   pool.query('SELECT * FROM names', (error, results) => {
-    if (error) {
+    if (error)
+    {
       throw error
     }
     res.status(200).json(results.rows)
