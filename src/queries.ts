@@ -56,18 +56,47 @@ export const getNames = (req: any, res: any): any => {
 export const newDisplayName = (req: any, res: any) => {
   console.log('/api/newDisplayName');
   const { displayname, firstname, lastname } = req.body;
+  console.log("displayname: " + displayname);
 
-  const query: string = `INSERT INTO names (displayname, firstname, lastname) VALUES ` +
-    `('${displayname}', '{${firstname}}', '{${lastname}}')`;
 
-  console.log(query)
-
-  pool.query(query, (error, results) => {
-    if (error)
+  // Check if that display name exists. If it does, add to the array. If not, add a new row.
+  const getQuery: string = `SELECT * FROM names WHERE displayname='${displayname}';`
+  pool.query(getQuery, (getError, getResults) => {
+    if (getError)
     {
-      throw error
+      throw getError;
     }
-    res.status(201).send(`User added with ID: ${res.insertId}`)
+    if (getResults.rowCount === 0) // does not exist, need to insert a new row
+    {
+      const insertQuery: string = `INSERT INTO names (displayname, firstname, lastname) VALUES
+        ('${displayname}', '{${firstname}}', '{${lastname}}');`;
+      pool.query(insertQuery, (insertError, insertResults) => {
+        if (insertError)
+        {
+          throw insertError;
+        }
+        console.log("INSERTED");
+        console.log(insertResults);
+      })
+    }
+    else // exists, need to add to the existing array
+    {
+      console.log("TODO")
+    }
   })
+
+
+  // const query: string = `INSERT INTO names (displayname, firstname, lastname) VALUES ` +
+  //   `('${displayname}', '{${firstname}}', '{${lastname}}')`;
+
+  // console.log(query)
+
+  // pool.query(query, (error, results) => {
+  //   if (error)
+  //   {
+  //     throw error
+  //   }
+  //   res.status(201).send(`User added with ID: ${res.insertId}`)
+  // })
 }
 

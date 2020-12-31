@@ -32,32 +32,7 @@ app.use(express_fileupload_1.default());
 ///////////////////
 // Database
 app.get('/api/getNames', queries_1.getNames);
-app.post('/api/newDisplayName', queries_1.newDisplayName);
-// const sequelize = new Sequelize('postgres://localhost:5432/dbname')
-// sequelize.authenticate()
-// .then(() => {
-//   console.log('Connection has been established successfully.');
-// })
-// .catch((err: any) => {
-//   console.error('Unable to connect to the database:', err);
-// });
-// const client = new Client({
-//   connectionString: process.env.DATABASE_URL || 'postgres://localhost:5000/journal-word-frequencies',
-//   ssl: true
-// });
-// client.connect();
-// client.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, res) => {
-//   if (err)
-//   {
-//     throw err;
-//   }
-//   console.log("DATABASE STUFF:");
-//   for (const row of res.rows)
-//   {
-//     console.log(JSON.stringify(row));
-//   }
-//   client.end();
-// });
+app.post('/api/displayName/add', queries_1.newDisplayName);
 ///////////////////
 app.get("/test", (req, res) => {
     console.log("/test");

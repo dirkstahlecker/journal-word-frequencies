@@ -55,12 +55,12 @@ class App extends React.Component<AppProps>
   private async fetchTestData(): Promise<void>
   {
     const data = {
-      displayname: "kip",
-      firstname: "kip",
+      displayname: "dirk",
+      firstname: "dirk",
       lastname: "stahlecker"
     };
 
-    const testDataRaw = await fetch('/api/newDisplayName', {
+    const testDataRaw = await fetch('/api/displayName/add', {
       method: 'POST', // *GET, POST, PUT, DELETE, etc.
       // mode: 'cors', // no-cors, *cors, same-origin
       // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -80,13 +80,7 @@ class App extends React.Component<AppProps>
 
   private async fetchAllDbData(): Promise<void>
   {
-    const data = {
-      displayname: "kip",
-      firstname: "kip",
-      lastname: "stahlecker"
-    };
-
-    const testDataRaw = await fetch('/api/getNames',);
+    const testDataRaw = await fetch('/api/getNames');
     const td = await testDataRaw.json();
 
     runInAction(() => this.machine.testData = JSON.stringify(td));
