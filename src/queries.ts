@@ -1,4 +1,4 @@
-import { Pool } from 'pg'
+import { Pool, QueryResult } from 'pg'
 //tslint:disable
 const pg = require('pg');
 // tslint:enable
@@ -53,46 +53,62 @@ export const getNames = (req: any, res: any): any => {
   })
 }
 
-export const newDisplayName = (req: any, res: any) => {
+// wrapper to make a query and do error handling
+async function makeQuery(query: string): Promise<any>
+{
+  try
+  {
+    const result = await pool.query(query);
+    return result;
+  }
+  catch (e)
+  {
+    console.error("ERROR with query " + query);
+    throw e;
+  }
+}
+
+async function getRowsForDisplayName(displayname: string): Promise<any>
+{
+  const query: string = `SELECT * FROM names WHERE displayname='${displayname}';`;
+  return makeQuery(query);
+}
+
+async function insertNewNameRow(displayname: string, firstname: string, lastname: string): Promise<any>
+{
+  const insertQuery: string = `INSERT INTO names (displayname, firstname, lastname) VALUES
+    ('${displayname}', '{${firstname}}', '{${lastname}}');`;
+  return makeQuery(insertQuery);
+}
+
+async function appendFirstAndLastNames(displayname: string, firstname: string, lastname: string): Promise<any>
+{
+  const appendFirstQuery: string = `UPDATE names
+    SET firstname = firstname || array['${firstname}'] where displayname = '${displayname}';`
+  makeQuery(appendFirstQuery);
+
+  const appendLastQuery: string = `UPDATE names
+  SET lastname = lastname || array['${lastname}'] where displayname = '${displayname}';`
+return makeQuery(appendLastQuery);
+}
+
+export const newDisplayName = async(req: any, res: any) => {
   console.log('/api/newDisplayName');
   const { displayname, firstname, lastname } = req.body;
 
   // Check if that display name exists. If it does, add to the array. If not, add a new row.
-  const getQuery: string = `SELECT * FROM names WHERE displayname='${displayname}';`
-  pool.query(getQuery, (getError, getResults) => {
-    if (getError)
-    {
-      throw getError;
-    }
-    if (getResults.rowCount === 0) // does not exist, need to insert a new row
-    {
-      const insertQuery: string = `INSERT INTO names (displayname, firstname, lastname) VALUES
-        ('${displayname}', '{${firstname}}', '{${lastname}}');`;
-      pool.query(insertQuery, (insertError, insertResults) => {
-        if (insertError)
-        {
-          throw insertError;
-        }
-        console.log("INSERTED");
-        console.log(insertResults);
-        return insertResults;
-      })
-    }
-    else // exists, need to add to the existing array
-    {
-      const appendQuery: string = `UPDATE names
-        SET firstname = firstname || array['${firstname}'] where displayname = '${displayname}';`
-      pool.query(appendQuery, (appendError, appendResults) => {
-        if (appendError)
-        {
-          throw appendError;
-        }
-        console.log("APPENDED")
-        console.log(appendResults);
-        return appendResults;
-      })
-    }
-  })
+  const getResult = await getRowsForDisplayName(displayname);
+
+  if (getResult.rowCount === 0) // does not exist, need to insert a new row
+  {
+    const results = await insertNewNameRow(displayname, firstname, lastname);
+    return results;
+  }
+  else // exists, need to add to the existing array
+  {
+    const results = await appendFirstAndLastNames(displayname, firstname, lastname);
+    return results;
+  }
 
 
   // const query: string = `INSERT INTO names (displayname, firstname, lastname) VALUES ` +
