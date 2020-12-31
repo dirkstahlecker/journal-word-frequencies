@@ -56,8 +56,8 @@ class App extends React.Component<AppProps>
   {
     const data = {
       displayname: "dirk",
-      firstname: "dirk",
-      lastname: "stahlecker"
+      firstname: "dirk2",
+      lastname: "stahlecker2"
     };
 
     const testDataRaw = await fetch('/api/displayName/add', {

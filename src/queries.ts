@@ -56,8 +56,6 @@ export const getNames = (req: any, res: any): any => {
 export const newDisplayName = (req: any, res: any) => {
   console.log('/api/newDisplayName');
   const { displayname, firstname, lastname } = req.body;
-  console.log("displayname: " + displayname);
-
 
   // Check if that display name exists. If it does, add to the array. If not, add a new row.
   const getQuery: string = `SELECT * FROM names WHERE displayname='${displayname}';`
@@ -77,11 +75,22 @@ export const newDisplayName = (req: any, res: any) => {
         }
         console.log("INSERTED");
         console.log(insertResults);
+        return insertResults;
       })
     }
     else // exists, need to add to the existing array
     {
-      console.log("TODO")
+      const appendQuery: string = `UPDATE names
+        SET firstname = firstname || array['${firstname}'] where displayname = '${displayname}';`
+      pool.query(appendQuery, (appendError, appendResults) => {
+        if (appendError)
+        {
+          throw appendError;
+        }
+        console.log("APPENDED")
+        console.log(appendResults);
+        return appendResults;
+      })
     }
   })
 
