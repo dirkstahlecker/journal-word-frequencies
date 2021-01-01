@@ -8,7 +8,7 @@ import { AnyOperator } from 'sequelize/types';
 //tslint:disable
 const Sequelize = require('sequelize');
 // tslint:enable
-import {displayNamesEndpoint, newDisplayName} from "./queries";
+import {getAllDisplayNamesEndpoint, getFullNamesForDisplayNameEndpoint, newDisplayNameEndpoint} from "./queries";
 
 const app = express();
 
@@ -40,9 +40,10 @@ app.use(fileUpload());
 
 
 // app.get('/api/getNames', getNames);
-app.get('/api/getNames', displayNamesEndpoint);
-
-app.post('/api/displayName/add', newDisplayName);
+app.get('/api/displayName/all', getAllDisplayNamesEndpoint);
+app.get('/api/displayName/:dName', getFullNamesForDisplayNameEndpoint)
+// app.get('/api/fullName/all', getAllFullNamesEndpoint)
+app.post('/api/displayName/add', newDisplayNameEndpoint);
 
 ///////////////////
 

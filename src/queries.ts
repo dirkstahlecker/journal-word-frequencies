@@ -42,8 +42,17 @@ else
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 
+/*********************************************************************/
+// Types
 
+// [
+//   { name_id: 1, displayname: 'dirk' },
+//   { name_id: 2, displayname: 'kip' }
+// ]
+type DisplayNameInfo = { name_id: number, displayname: string };
+type FullNameInfo = { displayname: string, firstname: string | null, lastname: string | null };
 
+/*********************************************************************/
 // Query functions
 
 // wrapper to make a query and do error handling
@@ -61,14 +70,13 @@ async function makeQuery(query: string): Promise<any>
   }
 }
 
-export async function getAllDisplayNames(): Promise<string>
+export async function getAllDisplayNames(): Promise<DisplayNameInfo[]>
 {
   const query: string = 'SELECT * FROM names';
   const result = await makeQuery(query);
-  return JSON.stringify(result.rows);
+  return result.rows as DisplayNameInfo[];
 }
 
-// Returns just from the names table. Useful only
 async function displaynameExistsInNamesTable(displayname: string): Promise<boolean>
 {
   const query: string = `SELECT displayname FROM names WHERE displayname='${displayname}';`;
@@ -76,14 +84,13 @@ async function displaynameExistsInNamesTable(displayname: string): Promise<boole
   return result.rows === 1; // TODO: test
 }
 
-async function getFullNamesForDisplayname(displayname: string): Promise<any>
+async function getFullNamesForDisplayname(displayname: string): Promise<FullNameInfo[]>
 {
   const query: string = `SELECT names.displayname, firstlast.firstname, firstlast.lastname
   FROM names
   FULL OUTER JOIN firstlast ON names.name_id=firstlast.name_id;`;
   const result = await makeQuery(query);
-  console.log(result);
-  return result;
+  return result.rows as FullNameInfo[];
 }
 
 async function insertNewDisplayName(displayname: string): Promise<any>
@@ -138,10 +145,10 @@ async function displayNameContainsLastName(displayname: string, lastname: string
 
 
 
-
+/*********************************************************************/
 // Route endpoints
 
-export const newDisplayName = async(req: any, res: any) => {
+export const newDisplayNameEndpoint = async(req: any, res: any) => {
   console.log('/api/newDisplayName');
   const { displayname, firstname, lastname } = req.body;
 
@@ -166,11 +173,41 @@ export const newDisplayName = async(req: any, res: any) => {
   }
 }
 
-export const displayNamesEndpoint = async(req: Request, res: Response) => {
-	console.log(`/api/getNames`);
+export const getAllDisplayNamesEndpoint = async(req: Request, res: Response) => {
+	console.log(`/api/displayName/all`);
 
   const result = await getAllDisplayNames();
 
 	res.set('Content-Type', 'application/json');
 	res.json(result);
+}
+
+export const getFullNamesForDisplayNameEndpoint = async(req: Request, res: Response) => {
+  console.log(`/api/displayName/${req.params.dName}`)
+  const displayName: string = req.params.dName;
+  if (displayName === undefined)
+  {
+    console.error("displayname is undefined");
+    throw new Error("displayname is undefined");
+  }
+  const result: FullNameInfo[] = await getFullNamesForDisplayname(displayName);
+  // console.log(result);
+
+  res.set('Content-Type', 'application/json');
+	res.json(result);
+}
+
+export const getAllFullNamesEndpoint = async(req: Request, res: Response) => {
+  console.log("/api/fullName/all");
+
+  const fullNames = [];
+  const displayNames: DisplayNameInfo[] = await getAllDisplayNames();
+  displayNames.forEach(async(displayNameInfo: DisplayNameInfo) => {
+    const x = await getFullNamesForDisplayname(displayNameInfo.displayname);
+  });
+
+
+
+  res.set('Content-Type', 'application/json');
+	// res.json(result);
 }

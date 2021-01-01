@@ -52,7 +52,15 @@ class App extends React.Component<AppProps>
 {
   private machine: AppMachine = new AppMachine();
 
-  private async fetchTestData(): Promise<void>
+  private async getFullNameForDisplayName(): Promise<void>
+  {
+    const raw = await fetch('/api/displayName/dirk');
+    const fullNames = await raw.json();
+
+    console.log(fullNames);
+  }
+
+  private async addDisplayName(): Promise<void>
   {
     const data = {
       displayname: "dirk",
@@ -80,7 +88,7 @@ class App extends React.Component<AppProps>
 
   private async fetchAllDbData(): Promise<void>
   {
-    const testDataRaw = await fetch('/api/getNames');
+    const testDataRaw = await fetch('/api/displayName/all');
     const td = await testDataRaw.json();
 
     runInAction(() => this.machine.testData = JSON.stringify(td));
@@ -164,7 +172,7 @@ class App extends React.Component<AppProps>
           </TabList>
 
           <TabPanel>
-            <button onClick={() => this.fetchTestData()}>Test</button>&nbsp;
+            <button onClick={() => this.getFullNameForDisplayName()}>Test</button>&nbsp;
             <button onClick={() => this.fetchAllDbData()}>Get DB Data</button>
             <br/>
             {
