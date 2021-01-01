@@ -51,10 +51,15 @@ export abstract class FullNamesDb
     const getQuery: string = `SELECT firstlast.firstandlast_id FROM firstlast 
     WHERE firstlast.name_id='${nameId}' 
     AND firstlast.firstname='${firstname}' AND firstlast.lastname='${lastname}';`;
-    const firstlastId: number = await makeQuery(getQuery);
-    console.log(firstlastId);
+    const getResult = await makeQuery(getQuery);
+    if (getResult.rows.length !== 1)
+    {
+      throw new Error("Multiple possible rows to delete");
+    }
+    const firstlastId: number = getResult.rows[0].firstandlast_id;
 
     //now delete the row with the firstlast_id
     const deleteQuery: string = `DELETE FROM firstlast WHERE firstandlast_id='${firstlastId}';`;
+    return makeQuery(deleteQuery);
   }
 }

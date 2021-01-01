@@ -22,14 +22,18 @@ it('adds and deletes fullnames', async() => {
   const initialInfo: FullNameInfo[] | null = await FullNamesDb.get(displayName);
   const initialNumFullNames: number = initialInfo.length;
   
+  //ADD
   await FullNamesDb.addNewFullName(displayName, newFirstName, newLastName);
   
-  const fullNameInfo: FullNameInfo[] | null = await FullNamesDb.get(displayName);
+  let fullNameInfo: FullNameInfo[] | null = await FullNamesDb.get(displayName);
   expect(fullNameInfo.length).toEqual(initialNumFullNames + 1);
   expect(fullNameInfo[initialNumFullNames].firstname).toEqual(newFirstName);
   expect(fullNameInfo[initialNumFullNames].lastname).toEqual(newLastName);
 
-
+  //DELETE
+  await FullNamesDb.deleteFullName(displayName, newFirstName, newLastName);
+  fullNameInfo = await FullNamesDb.get(displayName);
+  expect(fullNameInfo.length).toEqual(initialNumFullNames);
 });
 
 // it('gets fullnames', async() => {
