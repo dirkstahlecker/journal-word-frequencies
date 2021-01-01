@@ -11,6 +11,21 @@ it('gets displaynames', async() => {
   expect(result).toBeNull
 });
 
+fit('insert and delete displayname', async() => {
+  const newDisplayName: string = "newDisplayName";
+
+  //ADD
+  await DisplayNamesDB.add(newDisplayName);
+  let result: DisplayNameInfo[] | null = await DisplayNamesDB.get(newDisplayName);
+  expect(result.length).toEqual(1);
+  expect(result[0].displayname).toEqual(newDisplayName);
+
+  //DELETE
+  await DisplayNamesDB.delete(newDisplayName);
+  result = await DisplayNamesDB.get(newDisplayName);
+  expect(result).toBeNull();
+});
+
 
 async function verifyInitialAndAddHelper(displayName: string, firstName: string, lastName: string): Promise<number>
 {

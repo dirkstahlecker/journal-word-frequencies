@@ -21,6 +21,21 @@ export abstract class DisplayNamesDB
     return [result];
   }
 
+  public static async add(displayname: string): Promise<any>
+  {
+    const insertQuery: string = `INSERT INTO names (displayname) VALUES
+      ('${displayname}');`;
+    return makeQuery(insertQuery);
+  }
+
+  public static async delete(displayName: string): Promise<void>
+  {
+    const deleteQuery: string = `DELETE FROM names WHERE names.displayname='${displayName}';`;
+    const result = await makeQuery(deleteQuery);
+    
+    return;
+  }
+
   /////////////////////////////////////////////////////////////////////////////////
 
   private static async getAll(): Promise<DisplayNameInfo[] | null>

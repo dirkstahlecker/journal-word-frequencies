@@ -3,19 +3,6 @@ import { DisplayNameInfo, FullNameInfo, makeQuery } from './db/DbUtils';
 import { DisplayNamesDB } from './db/DisplayNamesDB';
 
 
-/*********************************************************************/
-// Query functions
-
-
-
-async function insertNewDisplayName(displayname: string): Promise<any>
-{
-  const insertQuery: string = `INSERT INTO names (displayname) VALUES
-    ('${displayname}');`;
-  return makeQuery(insertQuery);
-}
-
-
 
 // async function appendFirstAndLastNames(displayname: string, firstname: string, lastname: string): Promise<any>
 // {
