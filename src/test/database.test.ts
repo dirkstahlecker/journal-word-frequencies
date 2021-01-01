@@ -12,18 +12,24 @@ it('gets displaynames', async() => {
 });
 
 
+async function verifyInitialAndAddHelper(displayName: string, firstName: string, lastName: string): Promise<number>
+{
+  //verify initial
+  const initialInfo: FullNameInfo[] | null = await FullNamesDb.get(displayName);
+  const initialNumFullNames: number = initialInfo.length;
+  
+  //ADD
+  await FullNamesDb.addNewFullName(displayName, firstName, lastName);
+
+  return initialNumFullNames;
+}
 
 it('adds and deletes fullnames', async() => {
   const displayName: string = "dirk";
   const newFirstName: string = "newFirst";
   const newLastName: string = "newLast";
 
-  //verify initial
-  const initialInfo: FullNameInfo[] | null = await FullNamesDb.get(displayName);
-  const initialNumFullNames: number = initialInfo.length;
-  
-  //ADD
-  await FullNamesDb.addNewFullName(displayName, newFirstName, newLastName);
+  const initialNumFullNames: number = await verifyInitialAndAddHelper(displayName, newFirstName, newLastName);
   
   let fullNameInfo: FullNameInfo[] | null = await FullNamesDb.get(displayName);
   expect(fullNameInfo.length).toEqual(initialNumFullNames + 1);
@@ -34,6 +40,28 @@ it('adds and deletes fullnames', async() => {
   await FullNamesDb.deleteFullName(displayName, newFirstName, newLastName);
   fullNameInfo = await FullNamesDb.get(displayName);
   expect(fullNameInfo.length).toEqual(initialNumFullNames);
+});
+
+it('does not add duplicate fullnames', async() => {
+  const displayName: string = "dirk";
+  const newFirstName: string = "newFirst";
+  const newLastName: string = "newLast";
+
+  const initialNumFullNames: number = await verifyInitialAndAddHelper(displayName, newFirstName, newLastName);
+
+  //ADD
+  await FullNamesDb.addNewFullName(displayName, newFirstName, newLastName);
+
+  //verify it added
+  let fullNameInfo: FullNameInfo[] | null = await FullNamesDb.get(displayName);
+  expect(fullNameInfo.length).toEqual(initialNumFullNames + 1);
+  
+  //ADD AGAIN
+  await FullNamesDb.addNewFullName(displayName, newFirstName, newLastName);
+
+  //verify it did not add
+  fullNameInfo = await FullNamesDb.get(displayName);
+  expect(fullNameInfo.length).toEqual(initialNumFullNames + 1);
 });
 
 // it('gets fullnames', async() => {

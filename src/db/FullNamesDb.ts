@@ -28,12 +28,26 @@ export abstract class FullNamesDb
     return result.rows as FullNameInfo[];
   }
 
-  public static async addNewFullName(displayname: string, firstname: string, lastname: string): Promise<any>
+  public static async addNewFullName(displayname: string, firstname: string, lastname: string): Promise<boolean>
   {
+    const existingFullNames: FullNameInfo[] | null = await FullNamesDb.get(displayname);
+    if (existingFullNames.length > 0)
+    {
+      const n: FullNameInfo | undefined = existingFullNames.find((fullName: FullNameInfo) => {
+        return fullName.firstname === firstname && fullName.lastname === lastname;
+      });
+      if (n !== undefined)
+      {
+        console.log("Didn't insert fullname - already exists");
+        return false;
+      }
+    }
+
     // TODO: check if they exist already
     const query: string = `INSERT INTO firstlast (name_id, firstname, lastname) VALUES
       ((SELECT name_id FROM names WHERE displayname='${displayname}'), '${firstname}', '${lastname}');`;
-    return await makeQuery(query);
+    await makeQuery(query);
+    return true;
   }
 
   public static async deleteFullName(displayname: string, firstname: string, lastname: string): Promise<void>
