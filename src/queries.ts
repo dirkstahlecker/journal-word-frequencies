@@ -1,4 +1,6 @@
 import { Pool, QueryResult } from 'pg'
+import {Request, Response} from 'express';
+import * as express from 'express';
 //tslint:disable
 const pg = require('pg');
 // tslint:enable
@@ -42,16 +44,7 @@ else
 
 
 
-export const getNames = (req: any, res: any): any => {
-  console.log("/api/getNames")
-  pool.query('SELECT * FROM names', (error, results) => {
-    if (error)
-    {
-      throw error
-    }
-    res.status(200).json(results.rows)
-  })
-}
+// Query functions
 
 // wrapper to make a query and do error handling
 async function makeQuery(query: string): Promise<any>
@@ -68,60 +61,116 @@ async function makeQuery(query: string): Promise<any>
   }
 }
 
-async function getRowsForDisplayName(displayname: string): Promise<any>
+export async function getAllDisplayNames(): Promise<string>
 {
-  const query: string = `SELECT * FROM names WHERE displayname='${displayname}';`;
-  return makeQuery(query);
+  const query: string = 'SELECT * FROM names';
+  const result = await makeQuery(query);
+  return JSON.stringify(result.rows);
 }
 
-async function insertNewNameRow(displayname: string, firstname: string, lastname: string): Promise<any>
+// Returns just from the names table. Useful only
+async function displaynameExistsInNamesTable(displayname: string): Promise<boolean>
 {
-  const insertQuery: string = `INSERT INTO names (displayname, firstname, lastname) VALUES
-    ('${displayname}', '{${firstname}}', '{${lastname}}');`;
+  const query: string = `SELECT displayname FROM names WHERE displayname='${displayname}';`;
+  const result = await makeQuery(query);
+  return result.rows === 1; // TODO: test
+}
+
+async function getFullNamesForDisplayname(displayname: string): Promise<any>
+{
+  const query: string = `SELECT names.displayname, firstlast.firstname, firstlast.lastname
+  FROM names
+  FULL OUTER JOIN firstlast ON names.name_id=firstlast.name_id;`;
+  const result = await makeQuery(query);
+  console.log(result);
+  return result;
+}
+
+async function insertNewDisplayName(displayname: string): Promise<any>
+{
+  const insertQuery: string = `INSERT INTO names (displayname) VALUES
+    ('${displayname}');`;
   return makeQuery(insertQuery);
 }
 
-async function appendFirstAndLastNames(displayname: string, firstname: string, lastname: string): Promise<any>
+async function addNewFullName(displayname: string, firstname: string, lastname: string): Promise<any>
 {
-  const appendFirstQuery: string = `UPDATE names
-    SET firstname = firstname || array['${firstname}'] where displayname = '${displayname}';`
-  makeQuery(appendFirstQuery);
-
-  const appendLastQuery: string = `UPDATE names
-  SET lastname = lastname || array['${lastname}'] where displayname = '${displayname}';`
-return makeQuery(appendLastQuery);
+  // TODO: check if they exist already
+  const query: string = `INSERT INTO firstlast (name_id, firstname, lastname) VALUES
+    ((SELECT name_id FROM names WHERE displayname='${displayname}'), '${firstname}', '${lastname}');`;
+  return await makeQuery(query);
 }
+
+// async function appendFirstAndLastNames(displayname: string, firstname: string, lastname: string): Promise<any>
+// {
+//   const appendFirstQuery: string = `UPDATE names
+//     SET firstname = firstname || array['${firstname}'] where displayname = '${displayname}';`
+//   makeQuery(appendFirstQuery);
+
+//   const appendLastQuery: string = `UPDATE names
+//   SET lastname = lastname || array['${lastname}'] where displayname = '${displayname}';`
+//   return makeQuery(appendLastQuery);
+// }
+
+// async function displayNameContainsFirstName(displayname: string, firstname: string): Promise<boolean>
+// {
+//   const query: string = `SELECT firstname FROM names WHERE displayname='${displayname}';`;
+//   const result = await makeQuery(query);
+//   if (result.rows.length !== 1)
+//   {
+//     throw new Error("Invariant failed: selecting displayname returns more than one row");
+//   }
+//   const firstnames: string[] = result.rows[0].firstname;
+//   return firstnames.indexOf(firstname) > -1;
+// }
+
+async function displayNameContainsLastName(displayname: string, lastname: string): Promise<boolean>
+{
+  const query: string = `SELECT lastname FROM names WHERE displayname='${displayname}';`;
+  const result = await makeQuery(query);
+  if (result.rows.length !== 1)
+  {
+    throw new Error("Invariant failed: selecting displayname returns more than one row");
+  }
+  const lastnames: string[] = result.rows[0].lastname;
+  return lastnames.indexOf(lastname) > -1;
+}
+
+
+
+
+// Route endpoints
 
 export const newDisplayName = async(req: any, res: any) => {
   console.log('/api/newDisplayName');
   const { displayname, firstname, lastname } = req.body;
 
   // Check if that display name exists. If it does, add to the array. If not, add a new row.
-  const getResult = await getRowsForDisplayName(displayname);
+  const haveDisplayName = await displaynameExistsInNamesTable(displayname);
 
-  if (getResult.rowCount === 0) // does not exist, need to insert a new row
+  if (!haveDisplayName) // does not exist, need to insert a new row
   {
-    const results = await insertNewNameRow(displayname, firstname, lastname);
+    const results = await insertNewDisplayName(displayname);
     return results;
   }
   else // exists, need to add to the existing array
   {
-    const results = await appendFirstAndLastNames(displayname, firstname, lastname);
-    return results;
+    // check if displayname already has the first and last name - do nothing if so
+
+    // const hasFirstName: boolean = await displayNameContainsFirstName(displayname, firstname);
+    // const hasLastName: boolean = await displayNameContainsLastName(displayname, lastname);
+
+
+    // const results = await appendFirstAndLastNames(displayname, firstname, lastname);
+    // return results;
   }
-
-
-  // const query: string = `INSERT INTO names (displayname, firstname, lastname) VALUES ` +
-  //   `('${displayname}', '{${firstname}}', '{${lastname}}')`;
-
-  // console.log(query)
-
-  // pool.query(query, (error, results) => {
-  //   if (error)
-  //   {
-  //     throw error
-  //   }
-  //   res.status(201).send(`User added with ID: ${res.insertId}`)
-  // })
 }
 
+export const displayNamesEndpoint = async(req: Request, res: Response) => {
+	console.log(`/api/getNames`);
+
+  const result = await getAllDisplayNames();
+
+	res.set('Content-Type', 'application/json');
+	res.json(result);
+}

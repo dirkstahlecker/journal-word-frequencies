@@ -31,7 +31,8 @@ app.use(express_fileupload_1.default());
 /////////////////////////////////////////////////////////////////////
 ///////////////////
 // Database
-app.get('/api/getNames', queries_1.getNames);
+// app.get('/api/getNames', getNames);
+app.get('/api/getNames', queries_1.displayNamesEndpoint);
 app.post('/api/displayName/add', queries_1.newDisplayName);
 ///////////////////
 app.get("/test", (req, res) => {
