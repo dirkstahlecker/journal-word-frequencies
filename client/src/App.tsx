@@ -54,7 +54,7 @@ class App extends React.Component<AppProps>
 
   private async getFullNameForDisplayName(): Promise<void>
   {
-    const raw = await fetch('/api/displayName/dirk');
+    const raw = await fetch('/api/fullNames/all');
     const fullNames = await raw.json();
 
     console.log(fullNames);

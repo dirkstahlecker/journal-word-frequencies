@@ -198,16 +198,19 @@ export const getFullNamesForDisplayNameEndpoint = async(req: Request, res: Respo
 }
 
 export const getAllFullNamesEndpoint = async(req: Request, res: Response) => {
-  console.log("/api/fullName/all");
+  console.log("/api/fullNames/all");
 
-  const fullNames = [];
+  const fullNames: FullNameInfo[] = [];
   const displayNames: DisplayNameInfo[] = await getAllDisplayNames();
   displayNames.forEach(async(displayNameInfo: DisplayNameInfo) => {
-    const x = await getFullNamesForDisplayname(displayNameInfo.displayname);
+    const names: FullNameInfo[] = await getFullNamesForDisplayname(displayNameInfo.displayname);
+    console.log(names);
+    fullNames.concat(names);
   });
 
+  // console.log(fullNames)
 
 
   res.set('Content-Type', 'application/json');
-	// res.json(result);
+	res.json(fullNames);
 }

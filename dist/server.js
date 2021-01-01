@@ -34,7 +34,7 @@ app.use(express_fileupload_1.default());
 // app.get('/api/getNames', getNames);
 app.get('/api/displayName/all', queries_1.getAllDisplayNamesEndpoint);
 app.get('/api/displayName/:dName', queries_1.getFullNamesForDisplayNameEndpoint);
-// app.get('/api/fullName/all', getAllFullNamesEndpoint)
+app.get('/api/fullNames/all', queries_1.getAllFullNamesEndpoint);
 app.post('/api/displayName/add', queries_1.newDisplayNameEndpoint);
 ///////////////////
 app.get("/test", (req, res) => {
