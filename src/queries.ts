@@ -1,6 +1,7 @@
 import {Request, Response} from 'express';
 import { DisplayNameInfo, FullNameInfo, makeQuery } from './db/DbUtils';
 import { DisplayNamesDB } from './db/DisplayNamesDB';
+import { FullNamesDb } from './db/FullNamesDb';
 
 
 
@@ -29,7 +30,7 @@ import { DisplayNamesDB } from './db/DisplayNamesDB';
 
 // async function displayNameContainsLastName(displayname: string, lastname: string): Promise<boolean>
 // {
-  //TODO: this won't work
+  // TODO: this won't work
 //   const query: string = `SELECT lastname FROM names WHERE displayname='${displayname}';`;
 //   const result = await makeQuery(query);
 //   if (result.rows.length !== 1)
@@ -47,27 +48,29 @@ import { DisplayNamesDB } from './db/DisplayNamesDB';
 
 export const newDisplayNameEndpoint = async(req: any, res: any) => {
   console.log('/api/newDisplayName');
-  const { displayname, firstname, lastname } = req.body;
+  const displayname = req.body.params.displayName;
 
-  // Check if that display name exists. If it does, add to the array. If not, add a new row.
-  const haveDisplayName = await displaynameExistsInNamesTable(displayname);
+  DisplayNamesDB.add(displayname);
 
-  if (!haveDisplayName) // does not exist, need to insert a new row
-  {
-    const results = await insertNewDisplayName(displayname);
-    return results;
-  }
-  else // exists, need to add to the existing array
-  {
-    // check if displayname already has the first and last name - do nothing if so
+  // // Check if that display name exists. If it does, add to the array. If not, add a new row.
+  // const haveDisplayName = await displaynameExistsInNamesTable(displayname);
 
-    // const hasFirstName: boolean = await displayNameContainsFirstName(displayname, firstname);
-    // const hasLastName: boolean = await displayNameContainsLastName(displayname, lastname);
+  // if (!haveDisplayName) // does not exist, need to insert a new row
+  // {
+  //   const results = await DisplayNamesDB.add(displayname);
+  //   return results;
+  // }
+  // else // exists, need to add to the existing array
+  // {
+  //   // check if displayname already has the first and last name - do nothing if so
+
+  //   // const hasFirstName: boolean = await displayNameContainsFirstName(displayname, firstname);
+  //   // const hasLastName: boolean = await displayNameContainsLastName(displayname, lastname);
 
 
-    // const results = await appendFirstAndLastNames(displayname, firstname, lastname);
-    // return results;
-  }
+  //   // const results = await appendFirstAndLastNames(displayname, firstname, lastname);
+  //   // return results;
+  // }
 }
 
 export const getAllDisplayNamesEndpoint = async(req: Request, res: Response) => {
@@ -87,7 +90,7 @@ export const getFullNamesForDisplayNameEndpoint = async(req: Request, res: Respo
     console.error("displayname is undefined");
     throw new Error("displayname is undefined");
   }
-  const result: FullNameInfo[] = await getFullNamesForDisplayname(displayName);
+  const result: FullNameInfo[] = await FullNamesDb.get(displayName);
   // console.log(result);
 
   res.set('Content-Type', 'application/json');
@@ -97,16 +100,7 @@ export const getFullNamesForDisplayNameEndpoint = async(req: Request, res: Respo
 export const getAllFullNamesEndpoint = async(req: Request, res: Response) => {
   console.log("/api/fullNames/all");
 
-  const fullNames: FullNameInfo[] = [];
-  const displayNames: DisplayNameInfo[] = await DisplayNamesDB.get();
-  displayNames.forEach(async(displayNameInfo: DisplayNameInfo) => {
-    const names: FullNameInfo[] = await getFullNamesForDisplayname(displayNameInfo.displayname);
-    console.log(names);
-    fullNames.concat(names);
-  });
-
-  // console.log(fullNames)
-
+  const fullNames: FullNameInfo[] | null = await FullNamesDb.getAll();
 
   res.set('Content-Type', 'application/json');
 	res.json(fullNames);

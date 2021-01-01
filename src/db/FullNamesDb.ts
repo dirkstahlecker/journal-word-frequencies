@@ -14,6 +14,21 @@ export abstract class FullNamesDb
     throw new Error("NOT IMPLEMENTED");
   }
 
+  public static async getAll(): Promise<FullNameInfo[] | null>
+  {
+    let fullNames: FullNameInfo[] = [];
+    const displayNames: DisplayNameInfo[] = await DisplayNamesDB.get();
+
+    for (let i: number = 0; i < displayNames.length; i++)
+    {
+      const displayNameInfo: DisplayNameInfo = displayNames[i];
+      const names: FullNameInfo[] = await FullNamesDb.get(displayNameInfo.displayname);
+      fullNames = fullNames.concat(names);
+    }
+
+    return fullNames;
+  }
+
   private static async getFullNamesForDisplayname(displayname: string): Promise<FullNameInfo[] | null>
   {
     const query: string = `SELECT names.displayname, firstlast.firstname, firstlast.lastname
@@ -21,7 +36,7 @@ export abstract class FullNamesDb
     FULL OUTER JOIN firstlast ON names.name_id=firstlast.name_id
     WHERE names.displayname='${displayname}';`;
     const result = await makeQuery(query);
-    if (result.rows.length == 0)
+    if (result.rows.length === 0)
     {
       return null;
     }
@@ -52,18 +67,18 @@ export abstract class FullNamesDb
 
   public static async deleteFullName(displayname: string, firstname: string, lastname: string): Promise<void>
   {
-    //find the name_id to use, so we delete the first and last name only for the indicated displayname
+    // find the name_id to use, so we delete the first and last name only for the indicated displayname
     const displayNameInfo: DisplayNameInfo[] | null = await DisplayNamesDB.get(displayname);
     if (displayNameInfo.length !== 1)
     {
       console.log("display name doesn't exist");
-      return; //do nothing
+      return; // do nothing
     }
     const nameId: string = displayNameInfo[0].name_id.toString();
 
-    //find the firstlast_id to delete
-    const getQuery: string = `SELECT firstlast.firstandlast_id FROM firstlast 
-    WHERE firstlast.name_id='${nameId}' 
+    // find the firstlast_id to delete
+    const getQuery: string = `SELECT firstlast.firstandlast_id FROM firstlast
+    WHERE firstlast.name_id='${nameId}'
     AND firstlast.firstname='${firstname}' AND firstlast.lastname='${lastname}';`;
     const getResult = await makeQuery(getQuery);
     if (getResult.rows.length !== 1)
@@ -72,7 +87,7 @@ export abstract class FullNamesDb
     }
     const firstlastId: number = getResult.rows[0].firstandlast_id;
 
-    //now delete the row with the firstlast_id
+    // now delete the row with the firstlast_id
     const deleteQuery: string = `DELETE FROM firstlast WHERE firstandlast_id='${firstlastId}';`;
     return makeQuery(deleteQuery);
   }

@@ -23,6 +23,7 @@ export abstract class DisplayNamesDB
 
   public static async add(displayname: string): Promise<any>
   {
+    // TODO: verify doesn't exist
     const insertQuery: string = `INSERT INTO names (displayname) VALUES
       ('${displayname}');`;
     return makeQuery(insertQuery);
@@ -32,7 +33,7 @@ export abstract class DisplayNamesDB
   {
     const deleteQuery: string = `DELETE FROM names WHERE names.displayname='${displayName}';`;
     const result = await makeQuery(deleteQuery);
-    
+
     return;
   }
 
@@ -42,7 +43,7 @@ export abstract class DisplayNamesDB
   {
     const query: string = 'SELECT * FROM names';
     const result = await makeQuery(query);
-    if (result.rows.length == 0)
+    if (result.rows.length === 0)
     {
       return null;
     }

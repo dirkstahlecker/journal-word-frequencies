@@ -88,7 +88,7 @@ class App extends React.Component<AppProps>
 
   private async fetchAllDbData(): Promise<void>
   {
-    const testDataRaw = await fetch('/api/displayName/all');
+    const testDataRaw = await fetch('/api/fullNames/all');
     const td = await testDataRaw.json();
 
     runInAction(() => this.machine.testData = JSON.stringify(td));
