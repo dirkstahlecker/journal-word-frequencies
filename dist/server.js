@@ -12,7 +12,7 @@ const parser_1 = require("./parser");
 const Sequelize = require('sequelize');
 // tslint:enable
 const queries_1 = require("./queries");
-const app = express_1.default();
+const app = (0, express_1.default)();
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 // Don't touch the following - Heroku gets very finnicky about it
@@ -20,7 +20,7 @@ const app = express_1.default();
 app.use(express_1.default.static(path_1.default.join(__dirname, 'client/build')));
 app.use(express_1.default.json()); // to support JSON-encoded bodies
 app.use(express_1.default.urlencoded()); // to support URL-encoded bodies
-app.use(express_fileupload_1.default());
+app.use((0, express_fileupload_1.default)());
 // app.use(bodyParser.json())
 // app.use(
 //   bodyParser.urlencoded({
