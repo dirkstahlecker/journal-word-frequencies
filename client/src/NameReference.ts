@@ -13,7 +13,8 @@ export class NameReference
         return word.replace(/\s/g, "");
     }
 
-    //TODO: update with the google doc - it's the main source of reference
+    //TODO: update with the google doc - it's the main source of reference (Journal Info)
+    //names must be lower case
     public static listOfNames: string[] = [
         "miranda",
         "damon",
@@ -609,7 +610,17 @@ export class NameReference
         "ezra",
         "aiden",
         "saraMarie",
-        "francesca"
+        "francesca",
+        "zion",
+        "carol",
+        "russ",
+        "mason",
+        "healy",
+        "aiden",
+        "aidan",
+        "akash",
+        "kalman",
+        "nour"
     ]
 }
 
