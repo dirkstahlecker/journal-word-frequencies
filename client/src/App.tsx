@@ -228,3 +228,10 @@ class App extends React.Component<AppProps>
 }
 
 export default App;
+
+/*
+TODO:
+
+-autocomplete or memory of some kind of unique names
+-way to indicates that names should no longer show up as names (like unique names I no longer see anymore)
+*/
